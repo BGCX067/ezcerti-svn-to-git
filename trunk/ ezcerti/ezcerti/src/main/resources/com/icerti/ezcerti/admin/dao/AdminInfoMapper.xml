@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icerti.ezcerti.admin.dao.AdminInfoMapper">
+
+<resultMap type="com.icerti.ezcerti.domain.Admin" id="getAdmin">
+	<id property="univ_cd" column="univ_cd"/>
+	<result property="coll_cd" column="coll_cd"/>
+	<result property="dept_cd" column="dept_cd"/>
+	<result property="admin_no" column="admin_no"/>
+	<result property="coll_name" column="coll_name"/>
+	<result property="dept_name" column="dept_name"/>
+	<result property="admin_name" column="admin_name"/>
+	<result property="admin_passwd" column="admin_passwd"/>
+	<result property="hp_no" column="hp_no"/>
+	<result property="email_addr" column="email_addr"/>
+	<result property="photo_info" column="photo_info"/>
+	<result property="admin_level_cd" column="admin_level_name"/>
+	<result property="admin_sts_cd" column="admin_sts_name"/>
+	<result property="admin_nick_name" column="admin_nick_name"/>
+	<result property="log_end_date" column="log_end_date"/>
+	<result property="authority" column="authority"/>
+	<result property="reg_type_cd" column="reg_type_cd"/>
+	<result property="reg_etc" column="reg_etc"/>
+	<result property="reg_date" column="reg_date"/>
+	<result property="row_no" column="row_no"/>
+</resultMap>
+
+	<select id="getAdminList" parameterType="map" resultMap="getAdmin">
+	<![CDATA[
+		SELECT C.CODE_NAME AS ADMIN_LEVEL_NAME, D.CODE_NAME AS ADMIN_STS_NAME , a.* 
+		FROM
+			(SELECT *
+        	 FROM
+        		(SELECT ROWNUM row_no, a.* 
+        		 FROM TB_ADMIN a
+        		 WHERE univ_cd=#{univ_cd}
+  	]]>
+        <if test='!searchValue.equals("")'>
+        	<choose>
+        		<when test='item.equals("name")'>
+                 AND admin_name LIKE '%${searchValue}%'
+        		</when>
+        		<when test='item.equals("code")'>
+                 AND admin_no LIKE '%${searchValue}%'
+                </when>
+        	</choose>
+        </if>
+        <![CDATA[
+        		 AND ROWNUM <= #{endRow})
+        	 WHERE row_no>=#{startRow}) a, TB_CODEMASTER c, TB_CODEMASTER d
+        WHERE A.ADMIN_LEVEL_CD=C.CODE AND A.ADMIN_STS_CD=D.CODE
+    ]]>    
+	</select>
+	<select id="getAdminListCount" parameterType="map" resultType="int">
+		<![CDATA[	
+		SELECT COUNT(*)
+		FROM TB_ADMIN
+		WHERE univ_cd=#{univ_cd}
+  		]]>
+    <if test='!searchValue.equals("")'>
+      <choose>
+       <when test='item.equals("name")'>
+        AND admin_name LIKE '%${searchValue}%'
+       </when>
+       <when test='item.equals("code")'>
+        AND admin_no LIKE '%${searchValue}%'
+       </when>
+      </choose>
+    </if>
+	</select>
+</mapper>
